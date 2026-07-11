@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: backend-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/newsfeed
+    username: ${DB_USERNAME:newsfeed}
+    password: ${DB_PASSWORD:newsfeed}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+server:
+  port: 8081
+
+app:
+  security:
+    # Only set COOKIE_SECURE=false for plain-HTTP local dev - must stay true wherever deployed.
+    cookie-secure: ${COOKIE_SECURE:true}
+  jwt:
+    # Dev-only default. MUST be overridden via JWT_SECRET env var outside local dev (>= 256 bits for HS256).
+    secret: ${JWT_SECRET:dev-only-change-me-please-this-should-be-at-least-256-bits-long-for-hs256}
+    access-token-ttl-minutes: 15
+    refresh-token-ttl-days: 30
+  cors:
+    allowed-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
+  media:
+    storage-path: ${MEDIA_STORAGE_PATH:./media}
+    public-url-prefix: /media

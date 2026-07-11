@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          # Single static route to the one backend instance. The moment a second instance exists,
+          # this uri becomes `lb://backend-service` with a service-discovery client added - no
+          # other change needed here, in the backend, or in the frontend (see RateLimitFilter doc
+          # for the same "cheap now, upgradeable later" reasoning applied to rate limiting).
+          #
+          # NOTE: this is the servlet-based "Gateway Server WebMVC" flavor (spring-cloud-starter-
+          # gateway-server-webmvc), NOT the classic reactive Gateway - routes bind under
+          # spring.cloud.gateway.server.webmvc.*, not spring.cloud.gateway.*. This module also has
+          # no globalcors equivalent (tracked upstream: spring-cloud/spring-cloud-gateway#3302) -
+          # CORS is configured instead via a plain WebMvcConfigurer bean, see GatewayConfig.java.
+          routes:
+            - id: backend-api
+              uri: ${BACKEND_URI:http://localhost:8081}
+              predicates:
+                - Path=/api/**,/media/**
+
+server:
+  port: 8080
+
+app:
+  cors:
+    allowed-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
+
+app:
+  rate-limit:
+    login:
+      capacity: 10
+      refill-tokens: 10
+      refill-period-seconds: 60
+    posts:
+      capacity: 30
+      refill-tokens: 30
+      refill-period-seconds: 60
