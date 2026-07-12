@@ -27,8 +27,6 @@ server:
 app:
   cors:
     allowed-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
-
-app:
   rate-limit:
     login:
       capacity: 10
