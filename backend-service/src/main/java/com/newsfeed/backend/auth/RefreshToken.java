@@ -17,6 +17,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Server-side record backing the opaque refresh_token cookie. Only the SHA-256 hash of the raw
@@ -39,9 +41,7 @@ public class RefreshToken {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // columnDefinition pinned to CHAR(64) (matches the V1 migration) rather than relying on
-    // `length`, which Hibernate would infer as VARCHAR(64) - a type mismatch ddl-auto=validate
-    // would reject at startup (see the same fix on User.email).
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(nullable = false, unique = true, columnDefinition = "CHAR(64)")
     private String tokenHash;
 
@@ -53,6 +53,7 @@ public class RefreshToken {
 
     private Instant revokedAt;
 
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(columnDefinition = "CHAR(64)")
     private String replacedByTokenHash;
 
