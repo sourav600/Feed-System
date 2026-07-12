@@ -30,13 +30,15 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query(value = """
             (SELECT * FROM posts p
                WHERE p.visibility = 'PUBLIC' AND p.deleted_at IS NULL
-                 AND (:cursorCreatedAt IS NULL OR (p.created_at, p.id) < (:cursorCreatedAt, :cursorId))
+                 AND (CAST(:cursorCreatedAt AS timestamptz) IS NULL
+                      OR (p.created_at, p.id) < (CAST(:cursorCreatedAt AS timestamptz), CAST(:cursorId AS bigint)))
              ORDER BY p.created_at DESC, p.id DESC
              LIMIT :fetchSize)
             UNION ALL
             (SELECT * FROM posts p
                WHERE p.visibility = 'PRIVATE' AND p.author_id = :viewerId AND p.deleted_at IS NULL
-                 AND (:cursorCreatedAt IS NULL OR (p.created_at, p.id) < (:cursorCreatedAt, :cursorId))
+                 AND (CAST(:cursorCreatedAt AS timestamptz) IS NULL
+                      OR (p.created_at, p.id) < (CAST(:cursorCreatedAt AS timestamptz), CAST(:cursorId AS bigint)))
              ORDER BY p.created_at DESC, p.id DESC
              LIMIT :fetchSize)
             ORDER BY created_at DESC, id DESC
