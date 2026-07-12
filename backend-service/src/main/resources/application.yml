@@ -3,8 +3,8 @@ spring:
     name: backend-service
   datasource:
     url: jdbc:postgresql://localhost:5432/newsfeed
-    username: ${DB_USERNAME:newsfeed}
-    password: ${DB_PASSWORD:newsfeed}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:root}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -30,9 +30,9 @@ app:
     cookie-secure: ${COOKIE_SECURE:true}
   jwt:
     # Dev-only default. MUST be overridden via JWT_SECRET env var outside local dev (>= 256 bits for HS256).
-    secret: ${JWT_SECRET:dev-only-change-me-please-this-should-be-at-least-256-bits-long-for-hs256}
+    secret: ${JWT_SECRET:MMGbVSnkv2q2abtMoygbw8Fse2LuwVCZjYWf4qdWwjv}
     access-token-ttl-minutes: 15
-    refresh-token-ttl-days: 30
+    refresh-token-ttl-days: 7
   media:
     storage-path: ${MEDIA_STORAGE_PATH:./media}
     public-url-prefix: /media
