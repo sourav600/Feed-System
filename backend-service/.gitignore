@@ -2,7 +2,7 @@ HELP.md
 target/
 
 ### Local media uploads (dev-only local disk storage, see FileStorageService) ###
-media/
+/media/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
