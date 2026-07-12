@@ -55,7 +55,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     @Query("""
             SELECT l FROM Like l JOIN FETCH l.user
             WHERE l.post.id = :postId
-              AND (:cursorCreatedAt IS NULL OR l.createdAt < :cursorCreatedAt
+              AND (cast(:cursorCreatedAt as Instant) IS NULL OR l.createdAt < :cursorCreatedAt
                    OR (l.createdAt = :cursorCreatedAt AND l.id < :cursorId))
             ORDER BY l.createdAt DESC, l.id DESC
             """)
@@ -68,7 +68,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     @Query("""
             SELECT l FROM Like l JOIN FETCH l.user
             WHERE l.comment.id = :commentId
-              AND (:cursorCreatedAt IS NULL OR l.createdAt < :cursorCreatedAt
+              AND (cast(:cursorCreatedAt as Instant) IS NULL OR l.createdAt < :cursorCreatedAt
                    OR (l.createdAt = :cursorCreatedAt AND l.id < :cursorId))
             ORDER BY l.createdAt DESC, l.id DESC
             """)
