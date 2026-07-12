@@ -33,8 +33,6 @@ app:
     secret: ${JWT_SECRET:dev-only-change-me-please-this-should-be-at-least-256-bits-long-for-hs256}
     access-token-ttl-minutes: 15
     refresh-token-ttl-days: 30
-  cors:
-    allowed-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
   media:
     storage-path: ${MEDIA_STORAGE_PATH:./media}
     public-url-prefix: /media
