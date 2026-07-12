@@ -49,11 +49,18 @@ export function CommentItem({ comment, postId }: CommentItemProps) {
           <div style={{ display: "flex", gap: 16, alignItems: "center", marginTop: 4 }}>
             <LikeButton
               liked={comment.likedByCurrentUser}
-              likeCount={comment.likeCount}
               pending={pending}
               onToggle={() => (comment.likedByCurrentUser ? unlike.mutate(comment.id) : like.mutate(comment.id))}
-              onShowLikers={() => setShowLikers(true)}
             />
+            {comment.likeCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowLikers(true)}
+                style={{ background: "none", border: "none", color: "#377DFF", cursor: "pointer", fontSize: 13 }}
+              >
+                {comment.likeCount} {comment.likeCount === 1 ? "like" : "likes"}
+              </button>
+            )}
             {!isReply && (
               <button
                 type="button"
