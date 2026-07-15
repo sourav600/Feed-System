@@ -43,6 +43,8 @@ export function PostComposer() {
   return (
     <div className="_feed_inner_text_area _b_radious6 _padd_b24 _padd_t24 _padd_r24 _padd_l24 _mar_b16">
       <form onSubmit={handleSubmit}>
+        <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/gif,image/webp" onChange={handleImageChange} hidden />
+
         <div className="_feed_inner_text_area_box">
           <div className="_feed_inner_text_area_box_image">
             <img src={user?.avatarUrl ?? "/assets/images/txt_img.png"} alt="" className="_txt_img" style={{ borderRadius: "50%", objectFit: "cover" }} />
@@ -84,7 +86,6 @@ export function PostComposer() {
                 </span>
                 Photo
               </button>
-              <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/gif,image/webp" onChange={handleImageChange} hidden />
             </div>
             <div className="_feed_common" title={visibility === "PRIVATE" ? "Only you can see this post" : "Everyone can see this post"}>
               <button
@@ -101,6 +102,28 @@ export function PostComposer() {
           <div className="_feed_inner_text_area_btn">
             <button type="submit" className="_feed_inner_text_area_btn_link" disabled={createPost.isPending || !content.trim()}>
               <SendIcon className="_mar_img" />
+              <span>{createPost.isPending ? "Posting..." : "Post"}</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="_feed_inner_text_area_bottom_mobile">
+          <div className="_feed_inner_text_mobile">
+            <div className="_feed_common">
+              <button type="button" className="_feed_inner_text_area_bottom_photo_link" onClick={() => fileInputRef.current?.click()}>
+                <PhotoIcon />
+              </button>
+            </div>
+            <div className="_feed_common" title={visibility === "PRIVATE" ? "Only you can see this post" : "Everyone can see this post"}>
+              <button
+                type="button"
+                className="_feed_inner_text_area_bottom_photo_link"
+                onClick={() => setVisibility((v) => (v === "PUBLIC" ? "PRIVATE" : "PUBLIC"))}
+              >
+                {visibility === "PRIVATE" ? "🔒" : "🌐"}
+              </button>
+            </div>
+            <button type="submit" className="_feed_inner_text_area_btn_link" disabled={createPost.isPending || !content.trim()}>
               <span>{createPost.isPending ? "Posting..." : "Post"}</span>
             </button>
           </div>
