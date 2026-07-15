@@ -1,0 +1,36 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_DEPLOY_KEY }}
+
+      - name: Add server to known hosts
+        run: ssh-keyscan -p 22 ${{ secrets.HOST_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy backend + gateway
+        run: |
+          ssh shourav@${{ secrets.HOST_IP }} 'bash -s' << 'ENDSSH'
+            set -e
+
+            cd ~/Feed-System
+
+            git config --global --add safe.directory ~/Feed-System
+
+            git fetch origin main
+            git reset --hard origin/main
+
+            sudo docker compose up -d --build
+            sudo docker image prune -f
+          ENDSSH
