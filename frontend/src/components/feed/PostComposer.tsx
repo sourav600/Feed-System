@@ -4,17 +4,28 @@ import { useCreatePost } from "../../hooks/useFeed";
 import type { Visibility } from "../../api/types";
 import { EditPencilIcon, PhotoIcon, SendIcon } from "./icons";
 
+const MAX_IMAGE_SIZE_BYTES = 1024 * 1024;
+
 export function PostComposer() {
   const { data: user } = useCurrentUser();
   const [content, setContent] = useState("");
   const [visibility, setVisibility] = useState<Visibility>("PUBLIC");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const createPost = useCreatePost();
 
   function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
+    if (file && file.size > MAX_IMAGE_SIZE_BYTES) {
+      setImageError("Image is too large. Max size is 1MB.");
+      setImage(null);
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+    setImageError(null);
     setImage(file);
     setImagePreview(file ? URL.createObjectURL(file) : null);
   }
@@ -22,6 +33,7 @@ export function PostComposer() {
   function clearImage() {
     setImage(null);
     setImagePreview(null);
+    setImageError(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -63,6 +75,8 @@ export function PostComposer() {
             </label>
           </div>
         </div>
+
+        {imageError && <p style={{ color: "#e02b2b", marginTop: 10, marginBottom: 0 }}>{imageError}</p>}
 
         {imagePreview && (
           <div style={{ position: "relative", marginTop: 10, marginBottom: 10 }}>
