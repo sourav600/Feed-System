@@ -2,7 +2,7 @@ import { type ChangeEvent, type FormEvent, useRef, useState } from "react";
 import { useCurrentUser } from "../../hooks/useAuth";
 import { useCreatePost } from "../../hooks/useFeed";
 import type { Visibility } from "../../api/types";
-import { ArticleIcon, EditPencilIcon, EventIcon, PhotoIcon, SendIcon, VideoIcon } from "./icons";
+import { EditPencilIcon, PhotoIcon, SendIcon } from "./icons";
 
 export function PostComposer() {
   const { data: user } = useCurrentUser();
@@ -85,30 +85,6 @@ export function PostComposer() {
                 Photo
               </button>
               <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/gif,image/webp" onChange={handleImageChange} hidden />
-            </div>
-            <div className="_feed_inner_text_area_bottom_video _feed_common">
-              <button type="button" className="_feed_inner_text_area_bottom_photo_link" disabled title="Coming soon">
-                <span className="_feed_inner_text_area_bottom_photo_iamge _mar_img">
-                  <VideoIcon />
-                </span>
-                Video
-              </button>
-            </div>
-            <div className="_feed_inner_text_area_bottom_event _feed_common">
-              <button type="button" className="_feed_inner_text_area_bottom_photo_link" disabled title="Coming soon">
-                <span className="_feed_inner_text_area_bottom_photo_iamge _mar_img">
-                  <EventIcon />
-                </span>
-                Event
-              </button>
-            </div>
-            <div className="_feed_inner_text_area_bottom_article _feed_common">
-              <button type="button" className="_feed_inner_text_area_bottom_photo_link" disabled title="Coming soon">
-                <span className="_feed_inner_text_area_bottom_photo_iamge _mar_img">
-                  <ArticleIcon />
-                </span>
-                Article
-              </button>
             </div>
             <div className="_feed_common" title={visibility === "PRIVATE" ? "Only you can see this post" : "Everyone can see this post"}>
               <button
