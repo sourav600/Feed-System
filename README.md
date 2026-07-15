@@ -2,6 +2,11 @@
 
 Three services: `gateway-service` (Spring Cloud Gateway, single entry point), `backend-service` (Spring Boot API), `frontend` (React + TypeScript). See [DOCUMENTATION.md](DOCUMENTATION.md) for what was built and why.
 
+## Live Demo
+
+- URL: https://sourav.iishanto.com/
+- Demo login: `demo@gmail.com` / `demo1234`
+
 ## Prerequisites
 
 - JDK 21 (Maven itself is not required - both Java services ship `mvnw`/`mvnw.cmd`)
