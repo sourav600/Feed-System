@@ -29,7 +29,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             SELECT c FROM Comment c JOIN FETCH c.author
             WHERE c.post.id = :postId AND c.parentComment IS NULL AND c.deletedAt IS NULL
               AND (c.post.visibility = 'PUBLIC' OR c.post.author.id = :viewerId)
-              AND (:cursorCreatedAt IS NULL OR c.createdAt < :cursorCreatedAt
+              AND (cast(:cursorCreatedAt as Instant) IS NULL OR c.createdAt < :cursorCreatedAt
                    OR (c.createdAt = :cursorCreatedAt AND c.id < :cursorId))
             ORDER BY c.createdAt DESC, c.id DESC
             """)
@@ -44,7 +44,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             SELECT c FROM Comment c JOIN FETCH c.author
             WHERE c.parentComment.id = :parentCommentId AND c.deletedAt IS NULL
               AND (c.post.visibility = 'PUBLIC' OR c.post.author.id = :viewerId)
-              AND (:cursorCreatedAt IS NULL OR c.createdAt < :cursorCreatedAt
+              AND (cast(:cursorCreatedAt as Instant) IS NULL OR c.createdAt < :cursorCreatedAt
                    OR (c.createdAt = :cursorCreatedAt AND c.id < :cursorId))
             ORDER BY c.createdAt DESC, c.id DESC
             """)

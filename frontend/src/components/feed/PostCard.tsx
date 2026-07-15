@@ -1,10 +1,12 @@
 import { useState } from "react";
 import type { Post } from "../../api/types";
 import { fetchPostLikers } from "../../api/posts";
-import { useLikePost, useUnlikePost } from "../../hooks/useFeed";
+import { useCurrentUser } from "../../hooks/useAuth";
+import { useDeletePost, useLikePost, useUnlikePost } from "../../hooks/useFeed";
 import { LikeButton } from "./LikeButton";
 import { LikersModal } from "./LikersModal";
 import { CommentThread } from "./CommentThread";
+import { BookmarkOutlineIcon, CommentIcon, DeleteIcon, HideIcon, KebabIcon, ShareIcon } from "./icons";
 
 interface PostCardProps {
   post: Post;
@@ -18,13 +20,24 @@ function resolveImageUrl(url: string | null): string | null {
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const { data: currentUser } = useCurrentUser();
   const likeMutation = useLikePost();
   const unlikeMutation = useUnlikePost();
+  const deleteMutation = useDeletePost();
   const [showComments, setShowComments] = useState(false);
   const [showLikers, setShowLikers] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
   const pending = likeMutation.isPending || unlikeMutation.isPending;
   const imageUrl = resolveImageUrl(post.imageUrl);
+  const isOwnPost = currentUser?.id === post.author.id;
+
+  function handleDelete() {
+    setShowMenu(false);
+    if (window.confirm("Delete this post? This cannot be undone.")) {
+      deleteMutation.mutate(post.id);
+    }
+  }
 
   return (
     <div className="_feed_inner_timeline_post_area _b_radious6 _padd_b24 _padd_t24 _mar_b16">
@@ -54,6 +67,49 @@ export function PostCard({ post }: PostCardProps) {
               </p>
             </div>
           </div>
+          <div className="_feed_inner_timeline_post_box_dropdown">
+            <div className="_feed_timeline_post_dropdown">
+              <button type="button" className="_feed_timeline_post_dropdown_link" onClick={() => setShowMenu((v) => !v)}>
+                <KebabIcon />
+              </button>
+            </div>
+            <div className={`_feed_timeline_dropdown${showMenu ? " show" : ""}`}>
+              <ul className="_feed_timeline_dropdown_list">
+                <li className="_feed_timeline_dropdown_item">
+                  <a href="#0" className="_feed_timeline_dropdown_link">
+                    <span>
+                      <BookmarkOutlineIcon />
+                    </span>
+                    Save Post
+                  </a>
+                </li>
+                <li className="_feed_timeline_dropdown_item">
+                  <a href="#0" className="_feed_timeline_dropdown_link">
+                    <span>
+                      <HideIcon />
+                    </span>
+                    Hide
+                  </a>
+                </li>
+                {isOwnPost && (
+                  <li className="_feed_timeline_dropdown_item">
+                    <button
+                      type="button"
+                      className="_feed_timeline_dropdown_link"
+                      onClick={handleDelete}
+                      disabled={deleteMutation.isPending}
+                      style={{ background: "none", border: "none", width: "100%", textAlign: "left" }}
+                    >
+                      <span>
+                        <DeleteIcon />
+                      </span>
+                      {deleteMutation.isPending ? "Deleting..." : "Delete Post"}
+                    </button>
+                  </li>
+                )}
+              </ul>
+            </div>
+          </div>
         </div>
 
         <p style={{ whiteSpace: "pre-wrap", margin: "12px 0" }}>{post.content}</p>
@@ -65,13 +121,34 @@ export function PostCard({ post }: PostCardProps) {
         )}
       </div>
 
-      <div className="_feed_inner_timeline_reaction" style={{ padding: "0 24px", display: "flex", gap: 20, alignItems: "center" }}>
+      {(post.likeCount > 0 || post.commentCount > 0) && (
+        <div className="_feed_inner_timeline_total_reacts _padd_r24 _padd_l24 _mar_b26">
+          <div className="_feed_inner_timeline_total_reacts_txt">
+            {post.likeCount > 0 && (
+              <p className="_feed_inner_timeline_total_reacts_para1">
+                <button
+                  type="button"
+                  onClick={() => setShowLikers(true)}
+                  style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                >
+                  <span>{post.likeCount}</span> {post.likeCount === 1 ? "Like" : "Likes"}
+                </button>
+              </p>
+            )}
+            {post.commentCount > 0 && (
+              <p className="_feed_inner_timeline_total_reacts_para2">
+                <span>{post.commentCount}</span> {post.commentCount === 1 ? "Comment" : "Comments"}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="_feed_inner_timeline_reaction">
         <LikeButton
           liked={post.likedByCurrentUser}
-          likeCount={post.likeCount}
           pending={pending}
           onToggle={() => (post.likedByCurrentUser ? unlikeMutation.mutate(post.id) : likeMutation.mutate(post.id))}
-          onShowLikers={() => setShowLikers(true)}
         />
         <button
           type="button"
@@ -80,7 +157,16 @@ export function PostCard({ post }: PostCardProps) {
         >
           <span className="_feed_inner_timeline_reaction_link">
             <span>
-              💬 {post.commentCount} {post.commentCount === 1 ? "Comment" : "Comments"}
+              <CommentIcon />
+              {post.commentCount} {post.commentCount === 1 ? "Comment" : "Comments"}
+            </span>
+          </span>
+        </button>
+        <button type="button" className="_feed_inner_timeline_reaction_share _feed_reaction">
+          <span className="_feed_inner_timeline_reaction_link">
+            <span>
+              <ShareIcon />
+              Share
             </span>
           </span>
         </button>

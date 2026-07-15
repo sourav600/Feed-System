@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import {
   createPost,
+  deletePost,
   fetchFeed,
   likePost,
   unlikePost,
@@ -34,6 +35,28 @@ export function useCreatePost() {
           return {
             ...existing,
             pages: [{ ...firstPage, items: [post, ...firstPage.items] }, ...restPages],
+          };
+        },
+      );
+    },
+  });
+}
+
+export function useDeletePost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (postId: number) => deletePost(postId),
+    onSuccess: (_result, postId) => {
+      queryClient.setQueryData<{ pages: CursorPage<Post>[]; pageParams: (string | null)[] }>(
+        FEED_KEY,
+        (existing) => {
+          if (!existing) return existing;
+          return {
+            ...existing,
+            pages: existing.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((post) => post.id !== postId),
+            })),
           };
         },
       );

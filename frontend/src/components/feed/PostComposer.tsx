@@ -1,8 +1,11 @@
 import { type ChangeEvent, type FormEvent, useRef, useState } from "react";
+import { useCurrentUser } from "../../hooks/useAuth";
 import { useCreatePost } from "../../hooks/useFeed";
 import type { Visibility } from "../../api/types";
+import { ArticleIcon, EditPencilIcon, EventIcon, PhotoIcon, SendIcon, VideoIcon } from "./icons";
 
 export function PostComposer() {
+  const { data: user } = useCurrentUser();
   const [content, setContent] = useState("");
   const [visibility, setVisibility] = useState<Visibility>("PUBLIC");
   const [image, setImage] = useState<File | null>(null);
@@ -41,14 +44,22 @@ export function PostComposer() {
     <div className="_feed_inner_text_area _b_radious6 _padd_b24 _padd_t24 _padd_r24 _padd_l24 _mar_b16">
       <form onSubmit={handleSubmit}>
         <div className="_feed_inner_text_area_box">
-          <textarea
-            className="form-control"
-            placeholder="Write something..."
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={3}
-            style={{ width: "100%", border: "none", resize: "vertical" }}
-          />
+          <div className="_feed_inner_text_area_box_image">
+            <img src={user?.avatarUrl ?? "/assets/images/txt_img.png"} alt="" className="_txt_img" style={{ borderRadius: "50%", objectFit: "cover" }} />
+          </div>
+          <div className="form-floating _feed_inner_text_area_box_form">
+            <textarea
+              className="form-control _textarea"
+              placeholder="Write something ..."
+              id="floatingTextarea"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+            <label className="_feed_textarea_label" htmlFor="floatingTextarea">
+              Write something ...
+              <EditPencilIcon />
+            </label>
+          </div>
         </div>
 
         {imagePreview && (
@@ -64,24 +75,48 @@ export function PostComposer() {
           </div>
         )}
 
-        <div className="_feed_inner_text_area_bottom" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 12 }}>
-          <div className="_feed_inner_text_area_item" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <div className="_feed_inner_text_area_bottom">
+          <div className="_feed_inner_text_area_item">
             <div className="_feed_inner_text_area_bottom_photo _feed_common">
               <button type="button" className="_feed_inner_text_area_bottom_photo_link" onClick={() => fileInputRef.current?.click()}>
-                <span className="_feed_inner_text_area_bottom_photo_iamge _mar_img">🖼️</span> Photo
+                <span className="_feed_inner_text_area_bottom_photo_iamge _mar_img">
+                  <PhotoIcon />
+                </span>
+                Photo
               </button>
               <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/gif,image/webp" onChange={handleImageChange} hidden />
             </div>
-
-            <div title={visibility === "PRIVATE" ? "Only you can see this post" : "Everyone can see this post"}>
+            <div className="_feed_inner_text_area_bottom_video _feed_common">
+              <button type="button" className="_feed_inner_text_area_bottom_photo_link" disabled title="Coming soon">
+                <span className="_feed_inner_text_area_bottom_photo_iamge _mar_img">
+                  <VideoIcon />
+                </span>
+                Video
+              </button>
+            </div>
+            <div className="_feed_inner_text_area_bottom_event _feed_common">
+              <button type="button" className="_feed_inner_text_area_bottom_photo_link" disabled title="Coming soon">
+                <span className="_feed_inner_text_area_bottom_photo_iamge _mar_img">
+                  <EventIcon />
+                </span>
+                Event
+              </button>
+            </div>
+            <div className="_feed_inner_text_area_bottom_article _feed_common">
+              <button type="button" className="_feed_inner_text_area_bottom_photo_link" disabled title="Coming soon">
+                <span className="_feed_inner_text_area_bottom_photo_iamge _mar_img">
+                  <ArticleIcon />
+                </span>
+                Article
+              </button>
+            </div>
+            <div className="_feed_common" title={visibility === "PRIVATE" ? "Only you can see this post" : "Everyone can see this post"}>
               <button
                 type="button"
                 className="_feed_inner_text_area_bottom_photo_link"
                 onClick={() => setVisibility((v) => (v === "PUBLIC" ? "PRIVATE" : "PUBLIC"))}
               >
-                <span className="_feed_inner_text_area_bottom_photo_iamge _mar_img">
-                  {visibility === "PRIVATE" ? "🔒" : "🌐"}
-                </span>
+                <span className="_feed_inner_text_area_bottom_photo_iamge _mar_img">{visibility === "PRIVATE" ? "🔒" : "🌐"}</span>
                 {visibility === "PRIVATE" ? "Private" : "Public"}
               </button>
             </div>
@@ -89,7 +124,8 @@ export function PostComposer() {
 
           <div className="_feed_inner_text_area_btn">
             <button type="submit" className="_feed_inner_text_area_btn_link" disabled={createPost.isPending || !content.trim()}>
-              {createPost.isPending ? "Posting..." : "Post"}
+              <SendIcon className="_mar_img" />
+              <span>{createPost.isPending ? "Posting..." : "Post"}</span>
             </button>
           </div>
         </div>

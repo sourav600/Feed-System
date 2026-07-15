@@ -1,5 +1,9 @@
 import { useCurrentUser, useLogout } from "../hooks/useAuth";
 import { useFeed } from "../hooks/useFeed";
+import { HeaderNav } from "../components/feed/HeaderNav";
+import { LeftSidebar } from "../components/feed/LeftSidebar";
+import { RightSidebar } from "../components/feed/RightSidebar";
+import { StoriesBar } from "../components/feed/StoriesBar";
 import { PostComposer } from "../components/feed/PostComposer";
 import { PostCard } from "../components/feed/PostCard";
 
@@ -12,40 +16,44 @@ export function FeedPage() {
 
   return (
     <div className="_layout _layout_main_wrapper">
-      <nav className="navbar navbar-expand-lg navbar-light _header_nav _padd_t10">
-        <div className="container _custom_container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div className="_logo_wrap">
-            <img src="/assets/images/logo.svg" alt="News Feed" className="_nav_logo" />
-          </div>
-          <div className="_header_nav_profile" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span className="_header_nav_para">
-              {user ? `${user.firstName} ${user.lastName}` : ""}
-            </span>
-            <button type="button" className="_btn1" onClick={() => logout.mutate()} style={{ padding: "6px 16px" }}>
-              Log out
-            </button>
+      <div className="_main_layout">
+        <HeaderNav user={user} onLogout={() => logout.mutate()} />
+
+        <div className="container _custom_container">
+          <div className="_layout_inner_wrap">
+            <div className="row">
+              <LeftSidebar />
+
+              <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                <div className="_layout_middle_wrap">
+                  <div className="_layout_middle_inner">
+                    <StoriesBar />
+
+                    <PostComposer />
+
+                    {isLoading && <p>Loading feed...</p>}
+                    {isError && <p>Could not load the feed. Please try again.</p>}
+                    {!isLoading && posts.length === 0 && <p>No posts yet. Be the first to share something.</p>}
+
+                    {posts.map((post) => (
+                      <PostCard key={post.id} post={post} />
+                    ))}
+
+                    {hasNextPage && (
+                      <div style={{ textAlign: "center", margin: "20px 0" }}>
+                        <button type="button" className="_btn1" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+                          {isFetchingNextPage ? "Loading..." : "Load more"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <RightSidebar />
+            </div>
           </div>
         </div>
-      </nav>
-
-      <div className="container _custom_container" style={{ maxWidth: 640, margin: "24px auto" }}>
-        <PostComposer />
-
-        {isLoading && <p>Loading feed...</p>}
-        {isError && <p>Could not load the feed. Please try again.</p>}
-        {!isLoading && posts.length === 0 && <p>No posts yet. Be the first to share something.</p>}
-
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} />
-        ))}
-
-        {hasNextPage && (
-          <div style={{ textAlign: "center", margin: "20px 0" }}>
-            <button type="button" className="_btn1" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
-              {isFetchingNextPage ? "Loading..." : "Load more"}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
