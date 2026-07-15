@@ -368,3 +368,19 @@ export function OnlineDotIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function MenuIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 22 22" {...props}>
+      <path stroke="#666" strokeLinecap="round" strokeWidth="1.5" d="M3 6h16M3 11h16M3 16h16" />
+    </svg>
+  );
+}
+
+export function CloseIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 18 18" {...props}>
+      <path stroke="#666" strokeLinecap="round" strokeWidth="1.5" d="M2 2l14 14M16 2L2 16" />
+    </svg>
+  );
+}

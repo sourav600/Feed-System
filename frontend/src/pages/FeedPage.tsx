@@ -1,6 +1,8 @@
 import { useCurrentUser, useLogout } from "../hooks/useAuth";
 import { useFeed } from "../hooks/useFeed";
 import { HeaderNav } from "../components/feed/HeaderNav";
+import { MobileHeader } from "../components/feed/MobileHeader";
+import { MobileBottomNav } from "../components/feed/MobileBottomNav";
 import { LeftSidebar } from "../components/feed/LeftSidebar";
 import { RightSidebar } from "../components/feed/RightSidebar";
 import { StoriesBar } from "../components/feed/StoriesBar";
@@ -18,6 +20,7 @@ export function FeedPage() {
     <div className="_layout _layout_main_wrapper">
       <div className="_main_layout">
         <HeaderNav user={user} onLogout={() => logout.mutate()} />
+        <MobileHeader user={user} onLogout={() => logout.mutate()} />
 
         <div className="container _custom_container">
           <div className="_layout_inner_wrap">
@@ -55,6 +58,8 @@ export function FeedPage() {
           </div>
         </div>
       </div>
+
+      <MobileBottomNav />
     </div>
   );
 }
