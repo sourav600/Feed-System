@@ -1,0 +1,5 @@
+target/
+media/
+.idea/
+.mvn/wrapper/maven-wrapper.jar
+*.iml

@@ -1,0 +1,29 @@
+services:
+  backend:
+    build: ./backend-service
+    network_mode: host
+    environment:
+      SERVER_ADDRESS: 127.0.0.1
+      DB_USERNAME: newsfeed
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      COOKIE_SECURE: "true"
+      FRONTEND_ORIGIN: https://sourav.iishanto.com
+      MEDIA_STORAGE_PATH: /data/media
+    volumes:
+      - feed_media:/data/media
+    restart: unless-stopped
+
+  gateway:
+    build: ./gateway-service
+    network_mode: host
+    environment:
+      SERVER_ADDRESS: 127.0.0.1
+      BACKEND_URI: http://localhost:8081
+      FRONTEND_ORIGIN: https://sourav.iishanto.com
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  feed_media:
