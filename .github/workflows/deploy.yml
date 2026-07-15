@@ -33,4 +33,6 @@ jobs:
 
             sudo docker compose up -d --build
             sudo docker image prune -f
+
+            rsync -a --delete ~/Feed-System/frontend/dist/ /var/www/sourav.iishanto.com/
           ENDSSH
